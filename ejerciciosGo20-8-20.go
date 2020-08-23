@@ -160,10 +160,11 @@ func orden(numeros []int) []int {
 }
 
 func borrador(numero int, listaNumeros []int) []int {
+	largoLista := len(listaNumeros)
 	nuevaLista := make([]int, (len(listaNumeros) - 1))
 	aunNoBorro := true
-	largoLista := len(listaNumeros)
 	pibote := 0
+
 	for i := 0; i < largoLista; i++ {
 		if listaNumeros[i] == numero && aunNoBorro {
 			aunNoBorro = false
