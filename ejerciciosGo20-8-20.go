@@ -10,7 +10,6 @@ func main() {
 	fmt.Println("Es palíndromo?", esPalindromo("palindromo"))
 	fmt.Println("La letra a aparece", contarLetra("a", "palabra"), "veces en palabra")
 	fmt.Println("La palabra a aparece", contarPalabra("casa", "la casa se sintio como una casa nuevamente"), "veces en la frase")
-	//	fmt.Println("La palabra a aparece", contarPalabra2("casa", "la casa se sintio como una casa nuevamente"), "veces en la frase")
 	fmt.Println("Sr Simpson desde ahora", reemplazarPalabra("Usted es Homero Simpson", "Simpson", "Thompson"))
 	palabras := [4]string{"azul", "amarillo", "rojo", "negro"}
 	fmt.Println("Las palabras son:", palabras[:])
@@ -18,7 +17,12 @@ func main() {
 	numeros := [10]int{3, 5, 7, 8, 9, 0, 1, 2, 4, 6}
 	fmt.Println("Los numeros son:", numeros[:])
 	fmt.Println("El menor de la lista es", minimo(numeros[:]))
-	fmt.Println("El menor de la lista es", borrador(0, numeros[:]))
+	fmt.Println("Lista ordenada", orden(numeros[:]))
+	fmt.Println("Lista sin 0", borrador(0, numeros[:]))
+	fmt.Println("Lista ordenada borrando", ordenBorrando(numeros[:]))
+	numeros2 := [10]int{17, 13, -1, 8 - 20, 19, 10, 11, 12, 14, 16}
+	fmt.Println("Los numeros para combinar son:", numeros2[:])
+	fmt.Println("La lista resultante es", combinar(numeros[:], numeros2[:]))
 
 }
 
@@ -70,30 +74,6 @@ func contarPalabra(palabra string, frase string) int {
 	contador = contador - 1
 	return contador
 }
-
-/*Aca busco crear un string desde el pibote del for inicial para comprarlo de una con palabra
-
-func contarPalabra2(palabra string, frase string) int {
-	contador := 0
-	var minifrase string = "a"
-	if len(frase) < len(palabra) {
-		return contador
-	}
-
-	for i := 0; i < len(frase); i++ {
-		miniFrase := frase[i]
-
-		for y := 0; y < len(palabra); y++ {
-			pibote := i + y
-			miniFrase = miniFrase + frase[pibote]
-		}
-		if miniFrase == palabra {
-			contador = contador + 1
-		}
-	}
-	return contador
-}
-*/
 
 func reemplazarPalabra(frase string, palabra string, reemplazo string) string {
 	for i := 0; i < len(frase); i++ {
@@ -148,7 +128,7 @@ func minimo(numeros []int) int {
 	return minimo
 }
 
-func orden(numeros []int) []int {
+func ordenBorrando(numeros []int) []int {
 	largoNumeros := len(numeros)
 
 	if largoNumeros == 1 {
@@ -165,30 +145,50 @@ func orden(numeros []int) []int {
 	return ordenados
 }
 
+func orden(numeros []int) []int {
+	valorTemporal := 0
+	for i := 0; i < len(numeros); i++ {
+		for x := 0; x < len(numeros); x++ {
+			if numeros[x] > numeros[i] {
+				valorTemporal = numeros[x]
+				numeros[x] = numeros[i]
+				numeros[i] = valorTemporal
+			}
+		}
+	}
+	return numeros
+}
+
 func borrador(numero int, listaNumeros []int) []int {
 	nuevaLista := make([]int, (len(listaNumeros) - 1))
 	aunNoBorro := true
-
-	for i := 0; i < len(listaNumeros); i++ {
+	largoLista := len(listaNumeros)
+	pibote := 0
+	for i := 0; i < largoLista; i++ {
 		if listaNumeros[i] == numero && aunNoBorro {
 			aunNoBorro = false
 		} else {
-			nuevaLista[i] = listaNumeros[i]
+			nuevaLista[pibote] = listaNumeros[i]
+			pibote = pibote + 1
 		}
 	}
 	return nuevaLista
 }
 
 func combinar(lista1 []int, lista2 []int) []int {
-	listaResultado := make([]int, (len(lista1) + len(lista2)))
 
-	for i := 0; i < (len(lista1) + len(lista2)); i++ {
-		if i < len(lista1) {
-			listaResultado[i] = lista1[i]
-		} else {
-			listaResultado[i] = lista2[i]
-		}
+	longitudCombinada := len(lista1) + len(lista2)
+	listaResultado := make([]int, longitudCombinada)
+
+	for i := 0; i < len(lista1); i++ {
+		listaResultado[i] = lista1[i]
 	}
+	x := 0
+	for i := len(lista1); i < longitudCombinada; i++ {
+		listaResultado[i] = lista2[x]
+		x = x + 1
+	}
+
 	listaResultado = orden(listaResultado)
 	return listaResultado
 }
