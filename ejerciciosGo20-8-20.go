@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+	"strings"
+)
 
 func main() {
 	dupla := [2]string{"laaaargo", "cortito"}
@@ -23,7 +27,10 @@ func main() {
 	numeros2 := [10]int{17, 13, -1, 8 - 20, 19, 10, 11, 12, 14, 16}
 	fmt.Println("Los numeros para combinar son:", numeros2[:])
 	fmt.Println("La lista resultante es", combinar(numeros[:], numeros2[:]))
-
+	fmt.Println("La cant de parentecis es equilibrda en:()(())()es:", tieneParentesisBalanceados("()(())()"))
+	fmt.Println("La cant de parentecis es equilibrda en:))((es:", tieneParentesisBalanceados("))(("))
+	fmt.Println("La cant de parentecis es equilibrda en:(()es:", tieneParentesisBalanceados("(()"))
+	fmt.Println("Distancia entre", distanciaDeLevenshtein("casa", "calle"))
 }
 
 func esMasLargo(dupla []string) bool {
@@ -192,4 +199,84 @@ func combinar(lista1 []int, lista2 []int) []int {
 
 	listaResultado = orden(listaResultado)
 	return listaResultado
+}
+
+func tieneParentesisNeutrlizados(frase string) bool {
+	contadorAbiertos := contarLetra("(", frase)
+	contadorCerrados := contarLetra(")", frase)
+
+	return contadorAbiertos == contadorCerrados
+}
+
+func tieneParentesisBalanceados(frase string) bool {
+	if !tieneParentesisNeutrlizados(frase) {
+		return false
+	}
+
+	abierto := "("
+	cerrado := ")"
+	flagBorrro := true
+	largoFrace := len(frase)
+	resultado := true
+
+	for i := 0; i < largoFrace; i++ {
+		if frase[i] == abierto[0] {
+			resultado = false
+			for x := i + 1; x < largoFrace && flagBorrro; x++ {
+				if frase[x] == cerrado[0] {
+					frase = strings.Replace(frase, "(", "8", 1)
+					frase = strings.Replace(frase, ")", "8", 1)
+					flagBorrro = false
+					resultado = true
+				}
+			}
+			flagBorrro = true
+		}
+	}
+	return resultado
+}
+
+func distanciaDeLevenshtein(s string, t string) []float64 {
+
+	resultado := make([]float64, 2)
+
+	// Costo penaliza si hay un cambio en el caracter.
+	var costo float64 = 0
+
+	// Obtenemos la longitud de las cadenas para crear los slices.
+	m, n := len(s), len(t)
+	d := make([][]float64, m+1, m*n)
+	// Generamos el slice interno.
+	for idx := range d {
+		d[idx] = make([]float64, n+1)
+	}
+
+	// Recorre la matriz  de acuerdo a los cambios que encuentre en la cadena.
+	for i := 1; i <= m; i++ {
+		for j := 1; j <= n; j++ {
+			if s[i-1] == t[j-1] {
+				costo = 0
+			} else {
+				costo = 1
+			}
+			oper := math.Min(math.Min(d[i-1][j]+1, // Eliminacion
+				d[i][j-1]+1), // Inserccion
+				d[i-1][j-1]+costo) // Sustitucion
+			d[i][j] = oper
+		}
+	}
+
+	// Calcula el ratio de cambios en la palabra.
+	var porcentaje float64 = 0
+	if len(s) > len(t) {
+		porcentaje = d[m][n] / float64(len(s))
+	} else {
+		porcentaje = d[m][n] / float64(len(t))
+	}
+
+	// Regresa distancia y ratio.
+	resultado[0] = d[m][n]
+	resultado[1] = porcentaje
+
+	return resultado
 }
