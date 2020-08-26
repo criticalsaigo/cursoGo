@@ -209,6 +209,7 @@ func tieneParentesisNeutrlizados(frase string) bool {
 }
 
 func tieneParentesisBalanceados(frase string) bool {
+
 	if !tieneParentesisNeutrlizados(frase) {
 		return false
 	}
